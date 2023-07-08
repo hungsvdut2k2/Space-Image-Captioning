@@ -42,7 +42,7 @@ def train_model(config: dict):
         validation_data=val_ds
     )
     test_evaluation = model.evaluate(test_ds)
-    model.save("./image_captioning.keras")
+    model.save("./image_captioning.keras", save_format="tf")
     train_loss, train_acc = history.history['loss'], history.history['masked_accuracy']
     val_loss, val_acc = history.history['val_loss'], history.history['val_masked_accuracy']
     return (train_loss, train_acc), (val_loss, val_acc)
