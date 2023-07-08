@@ -1,4 +1,5 @@
 import tensorflow as tf 
+import matplotlib.pyplot as plt
 from argparse import ArgumentParser
 from data.build_dataset import BuildDataset
 from models.image_captioning_model import ImageCaptioningModel
@@ -41,10 +42,41 @@ def train_model(config: dict):
         validation_data=val_ds
     )
     test_evaluation = model.evaluate(test_ds)
+    model.save("./image_captioning.keras")
     train_loss, train_acc = history.history['loss'], history.history['masked_accuracy']
     val_loss, val_acc = history.history['val_loss'], history.history['val_masked_accuracy']
     return (train_loss, train_acc), (val_loss, val_acc)
 
+def visualize(train_history, val_history):
+    train_loss, train_accuracy = train_history
+    val_loss, val_accuracy = val_history
+    plt.figure(figsize=(10, 10))
+
+    plt.subplot(2, 2, 1)
+    plt.xlabel('Epochs')
+    plt.ylabel('Loss')
+    plt.title('Training loss')
+    plt.plot(train_loss, color='green')
+
+    plt.subplot(2, 2, 2)
+    plt.xlabel('Epochs') 
+    plt.ylabel('Accuracy')
+    plt.title('Training accuracy') 
+    plt.plot(train_accuracy, color='orange')
+
+    plt.subplot(2, 2, 3)
+    plt.xlabel('Epochs')
+    plt.ylabel('Loss') 
+    plt.title('Validation loss')
+    plt.plot(val_loss, color='green')
+
+    plt.subplot(2, 2, 4)
+    plt.xlabel('Epochs')
+    plt.ylabel('Accuracy')
+    plt.title('Validation accuracy')
+    plt.plot(val_accuracy, color='orange')
+
+    plt.show()
 
 if __name__ == "__main__":
     parser = ArgumentParser()
@@ -77,4 +109,5 @@ if __name__ == "__main__":
         "train_size":0.7,
         "val_size":0.2
     }
-    train_model(config)
+    train_history, val_history = train_model(config)
+    visualize(train_history, val_history)
