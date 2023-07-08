@@ -31,6 +31,10 @@ def train_model(config: dict):
             beta_2=0.98,
             epsilon=1e-9
     )
+    cp_callback = tf.keras.callbacks.ModelCheckpoint(filepath="./image_captioning.ckpt",
+                                                 save_weights_only=True,
+                                                 verbose=1)
+
     model.compile(
         loss=masked_loss,
         optimizer=optimizer,
@@ -39,10 +43,11 @@ def train_model(config: dict):
     history = model.fit(
         train_ds,
         epochs=config['epochs'],
-        validation_data=val_ds
+        validation_data=val_ds,
+        callbacks = [cp_callback]
     )
     test_evaluation = model.evaluate(test_ds)
-    model.save("./weight", save_format="tf")
+
     train_loss, train_acc = history.history['loss'], history.history['masked_accuracy']
     val_loss, val_acc = history.history['val_loss'], history.history['val_masked_accuracy']
     return (train_loss, train_acc), (val_loss, val_acc)
